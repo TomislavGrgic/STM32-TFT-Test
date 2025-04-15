@@ -192,3 +192,34 @@ void tft_draw_filled_triangle(TFT_S *tft, uint16_t x1, uint16_t y1, uint16_t x2,
         tft_draw_line(tft,x_left,i,x_right,i);
     }
 }
+
+
+static void tft_draw_octal_pixel(TFT_S *tft, int16_t x_k, int16_t y_k, int16_t x_origin, int16_t y_origin){
+    tft->draw_pixel(tft->context, x_origin+x_k, y_origin+y_k);
+    tft->draw_pixel(tft->context, x_origin+y_k, y_origin+x_k);
+    tft->draw_pixel(tft->context, x_origin-x_k, y_origin+y_k);
+    tft->draw_pixel(tft->context, x_origin-y_k, y_origin+x_k);
+    tft->draw_pixel(tft->context, x_origin-y_k, y_origin-x_k);
+    tft->draw_pixel(tft->context, x_origin-x_k, y_origin-y_k);
+    tft->draw_pixel(tft->context, x_origin+x_k, y_origin-y_k);
+    tft->draw_pixel(tft->context, x_origin+y_k, y_origin-x_k);
+}
+
+
+void tft_draw_circle(TFT_S *tft, int16_t x, int16_t y, int16_t r){
+    int16_t x_k = 0;
+    int16_t y_k = r;
+    int16_t d_k = 3-2*r;
+
+    while(x_k < y_k){
+        if( d_k < 0){
+            x_k++;
+            d_k = d_k + 4*x_k+6;
+        } else {
+            x_k++;
+            y_k--;
+            d_k = d_k + 4*(x_k-y_k)+10;
+        }
+        tft_draw_octal_pixel(tft, x_k, y_k, x, y);
+    }
+}

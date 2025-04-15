@@ -27,5 +27,7 @@ void tft_draw_rectangle(TFT_S *tft, uint16_t x, uint16_t y, uint16_t h, uint16_t
 void tft_draw_filled_rectangle(TFT_S *tft, uint16_t x, uint16_t y, uint16_t h, uint16_t w);
 void tft_draw_triangle(TFT_S *tft, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3);
 void tft_draw_filled_triangle(TFT_S *tft, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3);
+void tft_draw_circle(TFT_S *tft, int16_t x, int16_t y, int16_t r);
+void tft_draw_filled_circle(TFT_S *tft, int16_t x, int16_t y, int16_t r);
 
 #endif /*__TFT_H__*/
