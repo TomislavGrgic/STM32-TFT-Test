@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "tft.h": "c",
+        "spi1.h": "c",
+        "stm32f0xx.h": "c",
+        "clock_config.h": "c",
+        "gpio.h": "c",
+        "systick.h": "c",
+        "st7735.h": "c",
+        "stdlib.h": "c",
+        "types.h": "c"
+    }
+}
