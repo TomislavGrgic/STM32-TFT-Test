@@ -17,7 +17,16 @@ void main(void){
     tft.set_background(tft.context, 0,0,0);
 
     while(1){
-        draw_filled_triangle(&tft, 0,0,50,50,20,80);
+        /*draw_filled_triangle(&tft, 50,50,50,80,80,80);
+        draw_fast_rectangle(&tft, 30,30,10,10);
+        draw_filled_circle(&tft, 80,80,20);
+        draw_text(&tft, "TEST123", 10,10);*/
+        for(int i = 0; i < 360; i++){
+            tft.set_foreground(tft.context, 255,255,255);
+            draw_rectangle(&tft, 50,50,50,50,i);
+            tft.set_foreground(tft.context, 0,0,0);
+            draw_rectangle(&tft, 50,50,50,50,i); 
+        }
         system_sleep(1000);
     }
 }

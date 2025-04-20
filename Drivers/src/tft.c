@@ -44,6 +44,7 @@ static void st7735_adapter_bitstream(void *ctx_in, const uint8_t *data, uint16_t
 
 #endif
 
+
 void tft_init(TFT_S *tft, Drivers_E driver, uint16_t w, uint16_t h) {
 
     switch((uint8_t)driver){
@@ -74,6 +75,7 @@ void tft_init(TFT_S *tft, Drivers_E driver, uint16_t w, uint16_t h) {
         tft->deinit(tft->context);
     }
 }
+
 
 void tft_deinit(TFT_S *tft){
     tft->deinit(tft->context);
