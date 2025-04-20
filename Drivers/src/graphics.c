@@ -38,14 +38,14 @@ static void draw_octal_pixel(TFT_S *tft, int16_t x_k, int16_t y_k, int16_t x_ori
 
 
 static void draw_octal_line(TFT_S *tft, int16_t x_k, int16_t y_k, int16_t x_origin, int16_t y_origin){
-    draw_line(tft, x_origin+x_k, y_origin+y_k, x_origin+x_k, y_origin);
-    draw_line(tft, x_origin+y_k, y_origin+x_k, x_origin+y_k, y_origin);
-    draw_line(tft, x_origin-x_k, y_origin+y_k, x_origin-x_k, y_origin);
-    draw_line(tft, x_origin-y_k, y_origin+x_k, x_origin-y_k, y_origin);
-    draw_line(tft, x_origin-y_k, y_origin-x_k, x_origin-y_k, y_origin);
-    draw_line(tft, x_origin-x_k, y_origin-y_k, x_origin-x_k, y_origin);
-    draw_line(tft, x_origin+x_k, y_origin-y_k, x_origin+x_k, y_origin);
-    draw_line(tft, x_origin+y_k, y_origin-x_k, x_origin+y_k, y_origin);
+    draw_fast_line(tft, x_origin+x_k, y_origin+y_k, x_origin+x_k, y_origin);
+    draw_fast_line(tft, x_origin+y_k, y_origin+x_k, x_origin+y_k, y_origin);
+    draw_fast_line(tft, x_origin-x_k, y_origin+y_k, x_origin-x_k, y_origin);
+    draw_fast_line(tft, x_origin-y_k, y_origin+x_k, x_origin-y_k, y_origin);
+    draw_fast_line(tft, x_origin-y_k, y_origin-x_k, x_origin-y_k, y_origin);
+    draw_fast_line(tft, x_origin-x_k, y_origin-y_k, x_origin-x_k, y_origin);
+    draw_fast_line(tft, x_origin+x_k, y_origin-y_k, x_origin+x_k, y_origin);
+    draw_fast_line(tft, x_origin+y_k, y_origin-x_k, x_origin+y_k, y_origin);
 }
 
 
@@ -68,10 +68,19 @@ static void draw_circle_template(TFT_S *tft, int16_t x, int16_t y, int16_t r, vo
 }
 
 
-static uint16_t get_padding(uint16_t width){
-    uint16_t bytes = (width>>3)+1;
-    uint16_t padding = (bytes*8) - width;
-    return padding == 8 ? 0 : padding;
+void draw_fast_line(TFT_S *tft, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2) {
+    if( (x1 != x2) && (y1 != y2) ){
+        draw_line(tft, x1, y1, x2, y2);
+        return;
+    }
+
+    const uint16_t x_start = x1 < x2 ? x1 : x2;
+    const uint16_t x_stop = x2 < x1 ? x1 : x2;
+    const uint16_t y_start = y1 < y2 ? y1 : y2;
+    const uint16_t y_stop = y2 < y1 ? y1 : y2;
+
+    tft->set_frame(tft->context,x_start,x_stop,y_start,y_stop);
+    tft->fill_screen(tft->context);
 }
 
 
@@ -115,10 +124,10 @@ void draw_line(TFT_S *tft, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2){
 void draw_rectangle(TFT_S *tft, uint16_t x, uint16_t y, uint16_t h, uint16_t w) {
     const int16_t x_w = x+w;
     const int16_t y_h = y+h;
-    draw_line(tft,x,y,x_w,y);
-    draw_line(tft,x,y,x,y_h);
-    draw_line(tft,x,y_h,x_w,y_h);
-    draw_line(tft,x_w,y,x_w,y_h);
+    draw_fast_line(tft,x,y,x_w,y);
+    draw_fast_line(tft,x,y,x,y_h);
+    draw_fast_line(tft,x,y_h,x_w,y_h);
+    draw_fast_line(tft,x_w,y,x_w,y_h);
 }
 
 
@@ -129,9 +138,9 @@ void draw_filled_rectangle(TFT_S *tft, uint16_t x, uint16_t y, uint16_t h, uint1
 
 
 void draw_triangle(TFT_S *tft, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3) {
-    draw_line(tft,x1,y1,x2,y2);
-    draw_line(tft,x1,y1,x3,y3);
-    draw_line(tft,x2,y2,x3,y3);
+    draw_fast_line(tft,x1,y1,x2,y2);
+    draw_fast_line(tft,x1,y1,x3,y3);
+    draw_fast_line(tft,x2,y2,x3,y3);
 }
 
 
@@ -157,7 +166,7 @@ void draw_filled_triangle(TFT_S *tft, uint16_t x1, uint16_t y1, uint16_t x2, uin
         bottom_middle_accumulator += bottom_middle_rate;
         int16_t x_left = points[BOTTOM].x + top_bottom_accumulator;
         int16_t x_right = points[BOTTOM].x + bottom_middle_accumulator;
-        draw_line(tft,x_left,i,x_right,i);
+        draw_fast_line(tft,x_left,i,x_right,i);
     }
 
    for(int16_t i = points[MIDDLE].y;i < points[TOP].y; i++){
@@ -165,7 +174,7 @@ void draw_filled_triangle(TFT_S *tft, uint16_t x1, uint16_t y1, uint16_t x2, uin
         top_middle_accumulator += top_middle_rate;
         int16_t x_left = points[BOTTOM].x + top_bottom_accumulator;
         int16_t x_right = points[MIDDLE].x + top_middle_accumulator;
-        draw_line(tft,x_left,i,x_right,i);
+        draw_fast_line(tft,x_left,i,x_right,i);
     }
 }
 
@@ -176,8 +185,8 @@ void draw_circle(TFT_S *tft, int16_t x, int16_t y, int16_t r){
 
 
 void draw_filled_circle(TFT_S *tft, int16_t x, int16_t y, int16_t r) {
+    draw_fast_line(tft,x,y+r,x,y-r);
     draw_circle_template(tft,x,y,r,draw_octal_line);
-    draw_line(tft,x,y+r,x,y-r);
 }
 
 /*

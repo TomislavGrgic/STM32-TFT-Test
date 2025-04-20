@@ -17,8 +17,7 @@ void main(void){
     tft.set_background(tft.context, 0,0,0);
 
     while(1){
-        draw_filled_rectangle(&tft, 0,0,50,50);
-        draw_filled_rectangle_fast(&tft, 50,50,50,50);
+        draw_filled_triangle(&tft, 0,0,50,50,20,80);
         system_sleep(1000);
     }
 }
