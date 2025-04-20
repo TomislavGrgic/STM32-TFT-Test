@@ -20,7 +20,8 @@ SOURCE_FILES = main.c \
 	Drivers/src/spi1.c \
 	Drivers/src/clock_config.c \
 	Drivers/src/st7735.c \
-	Drivers/src/tft.c 
+	Drivers/src/tft.c \
+	Drivers/src/graphics.c
 
 OBJECT_FILES = $(addprefix $(OBJECTS_PATH)/, $(patsubst %.s, %.o, $(patsubst %.c, %.o, $(notdir $(SOURCE_FILES)))))
 

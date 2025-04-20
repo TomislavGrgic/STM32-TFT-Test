@@ -105,6 +105,8 @@ typedef union {
 typedef struct{
   uint16_t height;
   uint16_t width;
+  uint16_t viewport_h;
+  uint16_t viewport_w;
   uint32_t pixel_count;
   ST7735_Colour_S background;
   ST7735_Colour_S foreground;
@@ -121,5 +123,6 @@ void st7735_set_colour_mode(void *ctx_in, uint8_t mode);
 void st7735_display_state(void *ctx_in, uint8_t state);
 void st7735_set_frame(void *ctx_in, uint16_t x1, uint16_t x2, uint16_t y1, uint16_t y2);
 void st7735_draw_pixel(void *ctx_in);
+void st7735_write_bit_stream(void *ctx_in, const uint8_t *data, uint16_t size);
 
 #endif /*__ST7735_H__*/

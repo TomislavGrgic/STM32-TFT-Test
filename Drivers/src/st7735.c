@@ -104,6 +104,10 @@ void* st7735_init(int16_t x, int16_t y){
     st7735_stop_com();
     ctx->height = x;
     ctx->width = y;
+    
+    ctx->viewport_h = x;
+    ctx->viewport_w = y;
+
     ctx->pixel_count = ctx->height * ctx->width;
     ctx->pixel_write = st7735_write_18bit_pixel;
 
@@ -188,7 +192,7 @@ void st7735_fill_screen(void *ctx_in){
     st7735_set_write_mode(ST7735_WM_DATA);
 
     for(int i = 0; i < ctx->pixel_count; i++){
-        ctx->pixel_write(&ctx->background);
+        ctx->pixel_write(&ctx->foreground);
     }
 
     st7735_stop_com();
@@ -203,18 +207,18 @@ void st7735_set_frame(void *ctx_in, uint16_t x1, uint16_t x2, uint16_t y1, uint1
     st7735_set_write_mode(ST7735_WM_COMMAND);
     st7735_write(CASET);
     st7735_set_write_mode(ST7735_WM_DATA);
-    st7735_write((x1>>8)&0xFF);
-    st7735_write(x1&0xFF);
-    st7735_write((x2>>8)&0xFF);
-    st7735_write(x2&0xFF);
-
-    st7735_set_write_mode(ST7735_WM_COMMAND);
-    st7735_write(RASET);
-    st7735_set_write_mode(ST7735_WM_DATA);
     st7735_write((y1>>8)&0xFF);
     st7735_write(y1&0xFF);
     st7735_write((y2>>8)&0xFF);
     st7735_write(y2&0xFF);
+
+    st7735_set_write_mode(ST7735_WM_COMMAND);
+    st7735_write(RASET);
+    st7735_set_write_mode(ST7735_WM_DATA);
+    st7735_write((x1>>8)&0xFF);
+    st7735_write(x1&0xFF);
+    st7735_write((x2>>8)&0xFF);
+    st7735_write(x2&0xFF);
 
     st7735_stop_com();
 
@@ -238,9 +242,35 @@ void st7735_set_background_colour(void *ctx_in, uint8_t red, uint8_t green, uint
     ctx->background.blue = blue;
 }
 
+
 void st7735_set_foreground_colour(void *ctx_in, uint8_t red, uint8_t green, uint8_t blue) {
     ST7735_Context_S *ctx = (ST7735_Context_S *)ctx_in;
     ctx->foreground.red = red;
     ctx->foreground.green = green;
     ctx->foreground.blue = blue;
+}
+
+
+void st7735_write_bit_stream(void *ctx_in, const uint8_t *data, uint16_t size){
+    enum { BYTE_SHIFT = 3, BIT_MASK = 0x07, PIXEL_MASK = 0x01, MAX_BITS = 7};
+
+    ST7735_Context_S *ctx = (ST7735_Context_S *)ctx_in;
+    const uint16_t bits = size;
+    uint16_t counter = 0;
+
+    st7735_start_com();
+    st7735_set_write_mode(ST7735_WM_COMMAND);
+    st7735_write(RAMWR);
+    st7735_set_write_mode(ST7735_WM_DATA);
+    for(uint16_t i = 0; i < bits; i++) {
+        const uint16_t byte = i>>BYTE_SHIFT;
+        const uint8_t bit = i&BIT_MASK;
+        const uint8_t pixel = (data[byte]>>(MAX_BITS-bit))&PIXEL_MASK;
+        if(pixel){
+            ctx->pixel_write(&ctx->foreground);
+        } else {
+            ctx->pixel_write(&ctx->background);
+        }
+    }
+    st7735_stop_com();
 }

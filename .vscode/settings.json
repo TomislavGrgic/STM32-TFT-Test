@@ -8,6 +8,7 @@
         "systick.h": "c",
         "st7735.h": "c",
         "stdlib.h": "c",
-        "types.h": "c"
+        "types.h": "c",
+        "graphics.h": "c"
     }
 }
